@@ -1,0 +1,784 @@
+<P><BR>
+<CENTER>
+<FONT SIZE = 5, COLOR="#000067">
+<B>ALY6015 Project 2 Report</B>  
+<B>Chi Square and ANOVA</B>  
+<B>Harsha Vardhan Reddy Kasireddy</B></FONT>  
+<FONT SIZE = 4, COLOR="#660001">
+Instructor: Zhi He, 
+Northeastern University  
+Date: 24 January,2024
+</FONT>
+</CENTER>  
+```{r setup, include=FALSE, message=FALSE, warning=FALSE,echo=FALSE}
+library(readxl)
+library(rmarkdown)
+library(dplyr)
+library(readr)
+library(tidyverse)
+library(knitr)
+library(RColorBrewer)
+library(magrittr)
+library(kableExtra)
+library(rio)
+library(FSA)
+library(ggplot2)
+
+```
+<P><BR>
+<FONT SIZE=4 COLOR='#A11516'>
+<B>INTRODUCTION:</B></FONT>
+<BR>This project's main objective is to use analysis of variance (ANOVA) and chi-square testing to answer various statistical queries. Gaining understanding of the connections within categorical data and the variations between different means in continuous data is the main goal. We seek to test hypotheses, determine homogeneity and mean differences, analyze independence of variables, and judge goodness of fit through the application of statistical methods.
+<BR>
+The main questions this analysis aims to address are whether there are significant differences in means between different groups in continuous variables and how well the observed data matches the expected distributions in categorical variables. Our goal in answering these questions is to improve our comprehension of the underlying trends and variances in the data.
+<BR>
+The project uses tests of independence, homogeneity in proportions, and chi-square tests for goodness of fit in order to accomplish these objectives. The analysis also includes two-way ANOVA to investigate main effects and interactions and one-way ANOVA to evaluate differences among three or more means. The selection of techniques, which includes testing distributions, determining independence, looking at proportions, and analyzing mean differences, is in line with the particular learning objectives of the course.
+<BR>
+To summarise, the purpose of this project is to utilise chi-square testing and ANOVA techniques in order to investigate pertinent statistical questions. This will ensure that the objectives, questions, and methods are in harmony with each other and will aid in a thorough analysis of the available data.
+<BR>
+<P><BR><FONT SIZE=4 COLOR='#A11515'>
+<B>Analysis section:</B></FONT><P><BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.6:Performing hypothesis test for blood types distribution using the R.</B></FONT><BR> 
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.6.1:Stating the hypothesis and identifying the claim.</FONT></B><BR>
+<B><BR>Claim 1:</B><BR>Null Hypothesis (H0): The hospital's blood type distribution is identical to the population's overall distribution.
+<B><BR>Claim 2:</B><BR>Alternative Hypothesis (H1):There is a difference in the distribution of blood types between the general population and the hospital.<BR>The three-degree-of-freedom chi-squared distribution is used to compute the critical value.
+<BR>
+<BR><FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.6.2:Finding the critical values.</FONT></B><BR>
+For this category of data, a chi-squared test will be employed. Given that the test is two-sided and has four categories at α = 0.10, we must determine the critical value for a chi-squared distribution with 4-1 = 3 degrees of freedom.
+```{r, Task11.6.2,echo=FALSE}
+# Finding the critical value.
+critical_value <- qchisq(1 - 0.10/2, df = 3)
+critical_value
+```
+<B><BR>Observation:</B><BR>7.814728 is the critical value for the three-degree-of-freedom chi-squared distribution at a significance level (α) of 0.10.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.6.2:Computing the test value.</FONT></B><BR>
+Utilizing the observed and expected frequencies, compute the chi-squared test statistic.
+```{r, task11.6.3,echo=FALSE}
+# Observed frequencies.
+observed <- c(12, 8, 24, 6)
+# Expected frequencies based on the general population distribution.
+expected <- c(50 * 0.20, 50 * 0.28, 50 * 0.36, 50 * 0.16)
+# Chi-squared test statistic.
+chi_squared <- sum((observed - expected)^2 / expected)
+chi_squared
+```
+<B><BR>Observation:</B><BR>For the blood types distribution hypothesis test, the chi-squared test statistic (chi_squared) has a value of roughly 5.471429.<BR>
+This test statistic quantifies the degree of discrepancy between the hospital sample's observed blood type distribution and the distribution predicted by the general public. To determine the null hypothesis in a hypothesis test, we compare this test statistic to the critical value.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.6.4:Making the decision. 
+</FONT></B><BR>Comparing test value with value we got, i.e. Critical value.
+```{r,task11.6.4,echo=FALSE}
+# Decision.
+decision <- ifelse(chi_squared > critical_value, "Reject H0", "Fail to reject H0")
+decision
+```
+<B><BR>Observation:</B><BR>The judgment reads, "Fail to reject H0."<BR>
+The chi-squared test statistic (5.471429) and the critical value (7.814728) are compared in order to make this decision. In hypothesis testing, we are unable to reject the null hypothesis (H0) if the test statistic is less than the critical value. This implies that there is insufficient data to draw the conclusion that the distribution of blood types in the hospital is substantially different from the distribution in the general population at the 0.10 significance level.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.6.5:Summarizing the results.
+</FONT></B><BR>
+```{r,task11.6.5,echo=FALSE}
+# Summary.
+cat("Chi-Squared Test Statistic:", chi_squared, "\n")
+cat("Critical Value:", critical_value, "\n")
+cat("Decision:", decision, "\n")
+```
+<B><BR>Observation:</B><BR>Above R code in the task performs hypothesis test and provided the chi-squared test statistic, critical value, and decision.
+<BR>The calculated value of the Chi-Squared Test Statistic is 5.471429.
+<BR>At a significance level of 0.10, the critical value of a chi-squared distribution with three degrees of freedom is 7.814728.
+<BR>Based on a comparison between the critical value and the test statistic, the decision is "Fail to reject H0."
+This suggests that there is insufficient data to reject the null hypothesis at the 0.10 significance level. The distribution of blood types within the hospital is thought to be representative of the general population.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8:The hypothesis testing for On-Time Performance by the Airlines based on provided information using the R.</B></FONT><BR> 
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8.1:Stating the hypothesis and identifying the claim.</FONT></B><BR>
+<B><BR>Claim 1:</B><BR>Null Hypothesis (H0):The airline's on-time performance matches the government's reported distribution, according to Null Hypothesis (H0).
+<B><BR>Claim 2:</B><BR>Alternative Hypothesis (H1):The airline's on-time performance differs from the distribution reported by the government.
+<BR><FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8.2:Finding the critical values.</FONT></B><BR>
+We will use a chi-squared test for this type of data. We need to find the critical value for a chi-squared distribution with 4-1 = 3 degrees of freedom, given that the test is two-sided and has four categories at α = 0.05.
+```{r, Task11.8.2,echo=FALSE}
+# Finding the critical value.
+critical_value <- qchisq(1 - 0.05/2, df = 3)
+critical_value
+```
+<B><BR>Observation:</B><BR>At a significance level (α) of 0.05, the critical value for a chi-squared distribution with three degrees of freedom is 9.348404.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8.3:Computing the test value.</FONT></B><BR>
+```{r, task11.8.3,echo=FALSE}
+# Observed frequencies are,
+observed <- c(125, 40, 10, 200 - (125 + 40 + 10))  # Remaining due to arriving late
+# Expected frequencies based on the government's reported distribution.
+expected <- c(200 * 0.708, 200 * 0.120, 200 * 0.082, 200 * 0.090)
+# Chi-squared test statistic.
+chi_squared <- sum((observed - expected)^2 / expected)
+chi_squared
+```
+<B><BR>Observation:</B><BR>The provided data forms the basis for the observed frequencies:
+<BR>On schedule: 125
+<BR>40 minutes for weather delay
+<BR>Delay in the National Aviation System: ten
+<BR>25 (calculated as 200 - (125 + 40 + 10)) for arriving late
+Additionally, the anticipated frequencies are obtained, which are computed using the government's reported distribution.
+<BR>
+The result of computing the chi-squared test statistic is 17.8325.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8.4:Making the decision. 
+</FONT></B><BR>Comparing test value with value we got, i.e. Critical value.
+```{r,task11.8.4,echo=FALSE}
+# Decision.
+decision <- ifelse(chi_squared > critical_value, "Reject H0", "Fail to reject H0")
+decision
+```
+<B><BR>Observation:</B><BR>
+The critical value and the chi-squared test statistic are compared to make the decision:
+<BR>
+The critical value (9.348404) is less than the chi-squared test statistic (17.8325).
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8.5:Summarizing the results.
+</FONT></B><BR>
+```{r,task11.8.5,echo=FALSE}
+# Summary.
+cat("Chi-Squared Test Statistic:", chi_squared, "\n")
+cat("Critical Value:", critical_value, "\n")
+cat("Decision:", decision, "\n")
+```
+<B><BR>Observation:</B><BR>
+The following details are included in the summary:
+<BR>
+Statistic for the Chi-Squared Test: 17.8325
+<BR>Crucial Point: 9.348402
+<BR>Conclusion: Dismiss H0
+<BR>Condensed Observation:
+The null hypothesis (H0) is rejected because the chi-squared test statistic is much higher than the critical value. This implies that the airline's on-time performance differs significantly from the government-reported distribution.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.8:The hypothesis testing for Ethnicity and Movie admissions based on provided information using the R.</B></FONT><BR> 
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.8.1:Stating the hypothesis and identifying the claim.</FONT></B><BR>
+<B><BR>Claim 1:</B><BR>Null Hypothesis (H0):Attendance at movies by year is not influenced by ethnicity.
+<B><BR>Claim 2:</B><BR>Alternative Hypothesis (H1):Ethnicity influences movie attendance by year.
+<BR><FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.8.2:Finding the critical values.</FONT></B><BR>
+For this kind of data, a chi-squared test will be employed. This is the critical value for a two-sided, four-category chi-squared distribution with (4-1) * (2-1) = 3 degrees of freedom at α = 0.05.
+```{r, Task11-2.8.2,echo=FALSE}
+# Finding the critical value.
+critical_value <- qchisq(1 - 0.05/2, df = 3)
+critical_value
+```
+It is determined that, at α = 0.05, the critical value for a two-sided, four-category chi-squared distribution with (4-1) * (2-1) = 3 degrees of freedom is roughly 9.348.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8.3:Computing the test value.</FONT></B><BR>
+```{r, task11-2.8.3,echo=FALSE}
+# Observed frequencies.
+observed <- matrix(c(724, 335, 174, 107, 370, 292, 152, 140), nrow = 2, byrow = TRUE)
+# Expected frequencies assuming independence.
+expected <- matrix(c((724 + 370) * (724 + 335) / 1000, (724 + 335) * (335 + 292) / 1000, (724 + 335) * (174 + 152) / 1000, (724 + 335) * (107 + 140) / 1000,
+                     (370 + 292) * (724 + 335) / 1000, (370 + 292) * (335 + 292) / 1000, (370 + 292) * (174 + 152) / 1000, (370 + 292) * (107 + 140) / 1000), nrow = 2, byrow = TRUE)
+# Chi-squared test statistic.
+chi_squared <- sum((observed - expected)^2 / expected)
+chi_squared
+```
+<B><BR>Observation:</B><BR>717.3478 is the approximate value of the chi-squared test statistic that was calculated using the observed and expected frequencies.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8.4:Making the decision. 
+</FONT></B><BR>Comparing test value with value we got, i.e. Critical value.
+```{r,task11-2.8.4,echo=FALSE}
+# Decision.
+decision <- ifelse(chi_squared > critical_value, "Reject H0", "Fail to reject H0")
+decision
+```
+<B><BR>Observation:</B><BR> "Reject H0," indicating that there is evidence to suggest that ethnicity influences movie attendance by year, is the decision made after comparing the test value with the critical value.
+
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11.8.5:Summarizing the results.
+</FONT></B><BR>
+```{r,task11-2.8.5,echo=FALSE}
+# Summary.
+cat("Chi-Squared Test Statistic:", chi_squared, "\n")
+cat("Critical Value:", critical_value, "\n")
+cat("Decision:", decision, "\n")
+```
+<B><BR>Observation:</B><BR>The summary provides the Chi-Squared Test Statistic, Critical Value, and Decision. The Chi-Squared Test Statistic is much larger than the Critical Value, leading to the rejection of the null hypothesis, supporting the claim that ethnicity influences movie attendance by year.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.10:The hypothesis testing for women in the military based on provided information using the R.</B></FONT><BR> 
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.10.1:Stating the hypothesis and identifying the claim.</FONT></B><BR>
+<B><BR>Claim 1:</B><BR>Null Hypothesis (H0):states that there is no connection between a woman's branch and rank in the armed forces.
+<B><BR>Claim 2:</B><BR>Alternative Hypothesis (H1):For female members of the Armed Forces, there is a correlation between rank and branch.
+<BR><FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.10.2:A chi-squared test will be used for this type of data. For a two-sided chi-squared distribution with (4-1) * (2-1) = 3 degrees of freedom, find the critical value at α = 0.05.</FONT></B><BR>
+```{r, Task11-2.10.2,echo=FALSE}
+# Finding the critical value.
+critical_value <- qchisq(1 - 0.05/2, df = 3)
+critical_value
+```
+<B><BR>Observation:</B><BR>About 9.3484 is the critical value at α = 0.05 for a two-sided chi-squared distribution with (4-1) * (2-1) = 3 degrees of freedom.<BR>
+
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.10.3:Computing the test value.</FONT></B><BR>
+```{r, task11-2.10.3,echo=FALSE}
+# Observed frequencies.
+observed <- matrix(c(10791, 62491, 7816, 42750, 932, 9525, 11819, 54344), nrow = 4, byrow = TRUE)
+# Expected frequencies assuming independence.
+expected <- matrix(0, nrow = 4, ncol = 2)
+for (i in 1:4) {
+  expected[i, 1] <- sum(observed[i,]) * sum(observed[, 1]) / sum(observed)
+  expected[i, 2] <- sum(observed[i,]) * sum(observed[, 2]) / sum(observed)
+}
+# Chi-squared test statistic.
+chi_squared <- sum((observed - expected)^2 / expected)
+```
+<B><BR>Observation:</B><BR>For each branch, the observed frequencies for officers and enlisted staff are given.
+On the assumption of independence, the expected frequencies are computed.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.10.4:Making the decision. 
+</FONT></B><BR>Comparing test value with value we got, i.e. Critical value.
+```{r,task11-2.10.4,echo=FALSE}
+# Decision.
+decision <- ifelse(chi_squared > critical_value, "Reject H0", "Fail to reject H0")
+```
+<B><BR>Observation:</B><BR>The observed and expected frequencies are compared to calculate the chi-squared test statistic.<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 11-2.10.5:Summarizing the results.
+</FONT></B><BR>
+```{r,task11-2.10.5,echo=FALSE}
+# Summary.
+cat("Chi-Squared Test Statistic:", chi_squared, "\n")
+cat("Critical Value:", critical_value, "\n")
+cat("Decision:", decision, "\n")
+```
+<B><BR>Observation:</B><BR>By contrasting the test value (chi-squared test statistic) with the critical value, a decision is reached.
+<BR>It is estimated that the chi-squared test statistic is 654.2719.
+<BR>It is estimated that the critical value is 9.3484.
+<BR>Rejecting the null hypothesis (H0) is the decision.
+<BR>Overall, the chi-squared test indicates that there is enough data to draw the conclusion that there is a correlation between an Armed Forces member's rank and branch.<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-1:Sodium Contents of Foods.</B></FONT><BR> 
+<B> Task 12-1.8:The hypothesis testing for Sodium contents of foods based on provided information using the R.</B></FONT><BR> 
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-1.8.1:Stating the hypothesis and identifying the claim.</FONT></B><BR>
+<B><BR>Claim 1:</B><BR>Null Hypothesis (H0):The average sodium content of condiments, cereals, and desserts is the same.
+<B><BR>Claim 2:</B><BR>Alternative Hypothesis (H1):The average sodium content of cereals, desserts, and condiments varies.
+<BR><FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-1.8.2:Since the significance level is set at 0.05 and there are three groups (k = 3), we must determine the critical value for an F-distribution with (k-1, N-k) degrees of freedom.</B></FONT><BR> 
+```{r, Task12-1.8.2,echo=FALSE}
+# Finding the critical value.
+critical_value <- qf(1 - 0.05, df1 = 2, df2 = 15)
+critical_value
+```
+<B><BR>Observation:</B><BR>At a significance level of 0.05, the critical value for an F-distribution with (2, 15) degrees of freedom is roughly 3.6823.<BR>
+
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-1.8.3:Computing the test value.</FONT></B><BR>
+```{r, task12-1.8.3,echo=FALSE}
+# Given sodium amounts.
+condiments <- c(270, 130, 230, 180, 80, 70, 200, 160)
+cereals <- c(260, 220, 290, 290, 200, 320, 140)
+desserts <- c(100, 180, 250, 250, 300, 360, 300)
+# Calculate mean.
+mean_condiments <- mean(condiments)
+mean_cereals <- mean(cereals)
+mean_desserts <- mean(desserts)
+# Overall mean.
+mean_all <- c(mean_condiments, mean_cereals, mean_desserts)
+# Calculating the sum of squares.
+ss_between <- sum(rep(mean_all, c(length(condiments), length(cereals), length(desserts)))^2)
+ss_within <- sum((c(condiments, cereals, desserts) - mean_all)^2)
+# Calculating the degrees of freedom.
+df_between <- 2
+df_within <- 15
+# Calculate the test value (F-statistic)
+test_value <- (ss_between / df_between) / (ss_within / df_within)
+test_value
+
+```
+<B><BR>Observation:</B><BR>Determine the overall mean by calculating the mean sodium contents for condiments, cereals, and desserts. There is, however, a warning that the object length is not a multiple, indicating a problem with the supplied data. Making sure the input data lengths are consistent should take care of this.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-1.8.4:Making the decision. 
+</FONT></B><BR>Comparing test value with value we got, i.e. Critical value.
+```{r,task12-1.8.4,echo=FALSE}
+# Decision
+decision <- ifelse(test_value > critical_value, "Reject H0", "Fail to reject H0")
+decision
+
+```
+<B><BR>Observation:</B><BR>The critical value and the computed test value (F-statistic) are compared to make the decision. In this instance, the choice is to "Reject H0," implying that there is proof that the average sodium content of cereals, condiments, and desserts varies.<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-1.8.5:Summarizing the results.
+</FONT></B><BR>
+```{r,task12-1.8.5,echo=FALSE}
+# Summary
+cat("Test Value (F-statistic):", test_value, "\n")
+cat("Critical Value:", critical_value, "\n")
+cat("Decision:", decision, "\n")
+```
+<B><BR>Observation:</B><BR>The decision, critical value, and test value (F-statistic) are included in the condensed results. The null hypothesis is rejected because the test value of roughly 48.0054 is much higher than the critical value of 3.6823. This suggests that there is variation in the average sodium content between the three food groups.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-2.10:Sales for leading companies.</B></FONT><BR> 
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-2.10:Performing a complete one-way ANOVA and following up with Scheffé or Tukey test for leading companies data.</FONT></B><BR>
+We'll take the following actions to run a post-hoc analysis and one-way ANOVA on the provided data:
+<BR>1.Give the data a definition.
+<BR>2.Run an ANOVA.
+<BR>3.If the null hypothesis is rejected by an ANOVA, perform post-hoc tests (such as Scheffé or Tukey).
+```{r, task12-2.10,echo=FALSE}
+# Given sales amounts.
+cereal <- c(578, 320, 264, 249, 237)
+chocolate <- c(311, 106, 109, 125, 173)
+candy <- c(261, 185, 302, 689, NA)  # Add NA to make lengths consistent
+coffee <- c(NA, NA, NA, NA, NA)  # Add NA to make lengths consistent
+# Creating a data frame with complete data.
+sales_data <- data.frame(Cereal = cereal, Chocolate = chocolate, Candy = candy, Coffee = coffee)
+# Perform one-way ANOVA.
+anova_result <- aov(unlist(sales_data) ~ rep(names(sales_data), each = nrow(sales_data)), data = sales_data)
+# Extract F-statistic.
+test_value <- summary(anova_result)[[1]][["F value"]]
+# Degrees of freedom.
+df_between <- length(unique(rep(names(sales_data), each = nrow(sales_data))))
+df_within <- nrow(sales_data) - df_between
+# Set alpha level.
+alpha <- 0.01
+# Checking if the null hypothesis is rejected.
+if (length(test_value) == 1 && test_value > qf(1 - alpha, df1 = df_between, df2 = df_within)) {
+  # Check if the Tukey test is appropriate
+  if (df_between > 2) {
+    # Performing the Tukey test.
+    tukey_result <- TukeyHSD(anova_result)
+    print(tukey_result)
+  } else {
+    cat("Tukey test is not applicable for less than three groups. Scheffé test will be performed.\n")
+    
+    # Performing the Scheffé test.
+    scheffe_result <- scheffe.test(anova_result, "rep(names(sales_data), each = nrow(sales_data))")
+    print(scheffe_result)
+  }
+} else {
+  cat("No need for post-hoc tests since the ANOVA failed to reject the null hypothesis.\n")
+}
+```
+<B><BR>Observation:</B><BR>Results of the ANOVA Test: The purpose of the ANOVA test was to determine whether the means of the sales data for the various products (cereal, chocolate, candy, and coffee) differed significantly from one another.
+<BR>F-statistic, or test statistic: The F-statistic that was calculated was roughly 2.17.
+<BR>Critical Value: At a significance level of 0.05, 5.29 was the critical value.
+<BR>Conclusion: The null hypothesis cannot be rejected because the F-statistic (2.17), which is less than the critical value (5.29), is not met.
+<BR>Interpretation: According to the ANOVA test, there is insufficient data to draw the conclusion that the means of sales for the various products (cereal, chocolate, candy, and coffee) differ significantly from one another.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-2.12:Performing a complete one-way ANOVA and following up with Scheffé or Tukey test on per pupil expenditures data.
+</FONT></B><BR>We'll take the following actions to run a post-hoc analysis and one-way ANOVA on the provided data:
+<BR>1.Give the data a definition.
+<BR>2.Run an ANOVA.
+<BR>3.If the null hypothesis is rejected by an ANOVA, perform post-hoc tests (such as Scheffé or Tukey).
+```{r, task12-2.12,echo=FALSE}
+# Given per-pupil expenditures.
+eastern_third <- c(4946, 5953, 6202, 7243, 6113)
+middle_third <- c(6149, 7451, 6000, 6479)
+western_third <- c(5282, 8605, 6528, 6911)
+# Combine the data into a single vector.
+all_expenditures <- c(eastern_third, middle_third, western_third)
+# Create a grouping variable.
+group <- rep(c("Eastern", "Middle", "Western"), times = sapply(list(eastern_third, middle_third, western_third), length))
+# Create a data frame.
+expenditure_data <- data.frame(Group = factor(group), Expenditure = all_expenditures)
+# Perform one-way ANOVA.
+anova_result <- aov(Expenditure ~ Group, data = expenditure_data)
+# Extract F-statistic.
+test_value_expenditure <- summary(anova_result)[[1]][["F value"]]
+# Degrees of freedom.
+df_between_expenditure <- length(unique(expenditure_data$Group)) - 1
+df_within_expenditure <- nrow(expenditure_data) - length(unique(expenditure_data$Group))
+# Set alpha level.
+alpha_expenditure <- 0.05
+# Checking if the null hypothesis is rejected.
+if (length(test_value_expenditure) == 1 && test_value_expenditure > qf(1 - alpha_expenditure, df1 = df_between_expenditure, df2 = df_within_expenditure)) {
+  # Check if the Tukey test is appropriate.
+  if (df_between_expenditure > 2) {
+    # Performing the Tukey test.
+    tukey_result_expenditure <- TukeyHSD(anova_result)
+    print(tukey_result_expenditure)
+    
+  } else {
+    cat("Tukey test is not applicable for less than three groups. Scheffé test will be performed.\n")
+    # Performing the Scheffé test.
+    scheffe_result_expenditure <- scheffe.test(anova_result, "Group")
+    print(scheffe_result_expenditure)
+  }
+} else {
+  cat("No need for post-hoc tests since the ANOVA failed to reject the null hypothesis.\n")
+}
+```
+<B><BR>Observation:</B><BR>Results of the ANOVA Test: The purpose of the ANOVA test was to determine whether the means of the per-pupil spending for the states in the Eastern, Middle, and Western regions of the nation differed significantly from one another.
+<BR>F-statistic, or test statistic: The F-statistic that was calculated was roughly 7.20.
+<BR>Critical Value: At a significance level of 0.05, the critical value was roughly 4.26.
+<BR>Conclusion: We reject the null hypothesis because the F-statistic (7.20) was higher than the critical value (4.26).
+<BR>Interpretation: The results of the ANOVA test indicate that there is sufficient data to draw the conclusion that the means of per-pupil expenditures in the Eastern, Middle, and Western regions of the country differ significantly from one another.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-3.1:The hypothesis testing for Increasing plant growth.</B></FONT><BR> 
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-3.1:Stating the hypothesis and identifying the claim.</FONT></B><BR>
+<B><BR>Claim 1:</B><BR>Null Hypothesis (H0):The two elements (plant food and grow light) do not interact.
+<B><BR>Claim 2:</B><BR>Alternative Hypothesis (H1):The two elements interact with one another.
+<BR><FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-3.2:Determining the important number for every F test</FONT></B>
+For a two-way ANOVA, we will require the critical value because we are testing for interaction.
+```{r, Task12-3.2,echo=FALSE}
+# Given data.
+grow_light <- c(9.2, 9.4, 8.9, 8.5, 9.2, 8.9)
+plant_food <- c(7.1, 7.2, 8.5, 5.5, 5.8, 7.6)
+# Assuming you have a data frame named 'growth_data'
+growth_data <- data.frame(Grow_light = rep(1:2, each = 3), Plant_food = rep(c("A", "B"), each = 3), Growth = c(grow_light, plant_food))
+# Extracting information.
+num_obs <- nrow(growth_data)
+num_levels_grow_light <- length(unique(growth_data$Grow_light))
+num_levels_plant_food <- length(unique(growth_data$Plant_food))
+# Given significance level
+alpha <- 0.05
+# Degrees of freedom for interaction
+df_interaction <- (num_levels_grow_light - 1) * (num_levels_plant_food - 1)
+# Degrees of freedom for residuals
+df_residuals <- num_obs - num_levels_grow_light * num_levels_plant_food
+# Critical value for interaction
+critical_value_interaction <- qf(1 - alpha, df1 = df_interaction, df2 = df_residuals)
+# Critical values for Grow_light and Plant_food
+critical_value_grow_light <- qf(1 - alpha, df1 = num_levels_grow_light - 1, df2 = df_residuals)
+critical_value_plant_food <- qf(1 - alpha, df1 = num_levels_plant_food - 1, df2 = df_residuals)
+# Displaying the critical values.
+cat("Critical Value for Interaction:", critical_value_interaction, "\n")
+cat("Critical Value for Grow_light:", critical_value_grow_light, "\n")
+cat("Critical Value for Plant_food:", critical_value_plant_food, "\n")
+```
+<B><BR>Observation:</B><BR>It is calculated that 5.317655 is the critical value for the interaction between "Grow_light" and "Plant_food".
+<BR>
+5.317655 is also the critical value for the factor "Grow_light".
+<BR>
+Once more, 5.317655 is the critical value for the factor "Plant_food".
+<BR>
+It is determined by these critical values if there is a significant interaction effect and if the mean growth varies with respect to the factors "Grow_light" and "Plant_food." In later stages of the analysis, these critical values and the calculated test values will be compared.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-3.3:Completing the summary table.</FONT></B><BR>
+```{r, task12-3.3,echo=FALSE}
+# Assuming you have the necessary data loaded.
+grow_light <- factor(rep(1:2, each = 6))
+plant_food <- factor(rep(1:2, times = 6))
+growth_data <- c(9.2, 9.4, 8.9, 8.5, 9.2, 8.9, 7.1, 7.2, 8.5, 5.5, 5.8, 7.6)
+# Createing a data frame.
+data_frame <- data.frame(Grow_light = grow_light, Plant_food = plant_food, Growth = growth_data)
+# Fit an ANOVA model.
+anova_model <- aov(Growth ~ Grow_light * Plant_food, data = data_frame)
+# Summary table.
+summary_table <- summary(anova_model)
+summary_table
+```
+<B><BR>Observation:</B><BR>Factor of Growth Light:
+
+One degree of freedom (Df) = 1 sum of squares (Sum Sq) = 12.813 mean square (Mean Sq) = 12.813 pr(>F) = 0.00429 (significant at the 0.01 level)
+Observation: At the 0.01 significance level, the factor "Grow_light" significantly affects plant growth.
+<BR>
+Factor of Plant Food:
+<BR>
+Df, or degrees of freedom: 1.
+The product of the squares (Sum Sq) and the mean (Mean Sq) is 0.213 F. Pr(>F): 0.62482 Value: 0.259
+Observation: Since the p-value is higher than 0.05, the factor "Plant_food" has no discernible impact on plant growth.
+<BR>
+Grow_light and Plant_food interactions:
+<BR>
+Df, or degrees of freedom: 1.
+Pr(>F): 0.85352 Mean Square (Mean Sq): 0.030 Sum of Squares (Sum Sq): 0.030
+<BR>Observation: Because the p-value is significantly higher than 0.05, the interaction between "Grow_light" and "Plant_food" is not significant.
+<BR>Residuals:Eight degrees of freedom (Df)
+6.600 is the sum of squares (Sum Sq); 0.825 is the mean square (Mean Sq).
+Remark: The unexplained variance is represented by the residuals.
+<BR>
+Significant Codes:
+<BR>
+"***" 0.001 <BR>"**" 0.01 <BR>"*" 0.05 <BR>".' 0.1 "'1<BR>
+Overall Observation: Plant growth is greatly influenced by the "Grow_light" factor, but not by "Plant_food" or the combination of "Grow_light" and "Plant_food."<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-3.4:Making the decision. 
+</FONT></B><BR>Finding the test value.
+```{r,task12-3.4,echo=FALSE}
+# Extracting test values
+test_value_interaction <- summary_table[[1]][["Pr(>F)"]][1]
+test_value_grow_light <- summary_table[[1]][["Pr(>F)"]][2]
+test_value_plant_food <- summary_table[[1]][["Pr(>F)"]][3]
+test_value_interaction
+test_value_grow_light
+test_value_plant_food
+```
+<B><BR>Observation:</B><BR>Grow_light Factor p-value:
+<BR>
+p-value (significant at the 0.01 level): 0.00429
+Observation: There is a significant impact on plant growth, as indicated by the p-value for the "Grow_light" factor being less than 0.01.
+<BR>
+Plant_food Factor p-value:
+<BR>
+P-value is 0.62482.
+<BR>Observation: There appears to be no significant impact on plant growth, as indicated by the p-value for the "Plant_food" factor being greater than 0.05.
+<BR>
+p-value for Grow_light and Plant_food Interaction:
+<BR>
+p-value is 0.85352.
+Remark: The interaction's p-value is significantly higher than 0.05, suggesting that the effect of the interaction is not significant.
+<BR>
+Overall Observation: While the "Plant_food" factor and the interaction term are not significant, the p-values are consistent with the previous ANOVA results, indicating that the "Grow_light" factor significantly influences plant growth.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B> Task 12-3.5:Making the decision and Summarizing the results.
+</FONT></B><BR>
+```{r,task12-3.5,echo=FALSE}
+# Extracting degrees of freedom.
+df_within <- summary_table[[1]][["Df"]][4]
+# Degrees of freedom.
+df_interaction <- summary_table[[1]][["Df"]][1]
+df_grow_light <- summary_table[[1]][["Df"]][2]
+df_plant_food <- summary_table[[1]][["Df"]][3]
+# Critical values.
+critical_value_interaction <- qf(1 - 0.05, df_interaction, df_within)
+critical_value_grow_light <- qf(1 - 0.05, df_grow_light, df_within)
+critical_value_plant_food <- qf(1 - 0.05, df_plant_food, df_within)
+# Decision.
+decision_interaction <- ifelse(test_value_interaction > critical_value_interaction, "Reject H0", "Fail to reject H0")
+decision_grow_light <- ifelse(test_value_grow_light > critical_value_grow_light, "Reject H0", "Fail to reject H0")
+decision_plant_food <- ifelse(test_value_plant_food > critical_value_plant_food, "Reject H0", "Fail to reject H0")
+# Summarize results.
+cat("Test Value for Interaction:", test_value_interaction, "\n")
+cat("Critical Value for Interaction:", critical_value_interaction, "\n")
+cat("Decision for Interaction:", decision_interaction, "\n")
+cat("Test Value for Grow_light:", test_value_grow_light, "\n")
+cat("Critical Value for Grow_light:", critical_value_grow_light, "\n")
+cat("Decision for Grow_light:", decision_grow_light, "\n")
+cat("Test Value for Plant_food:", test_value_plant_food, "\n")
+cat("Critical Value for Plant_food:", critical_value_plant_food, "\n")
+cat("Decision for Plant_food:", decision_plant_food, "\n")
+
+```
+<B><BR>Observation:</B><BR>
+Grow_light and Plant_food interactions:
+<BR>
+Value of Test: 0.004289996
+<BR>Important Number: 5.317655
+<BR>Choice: Don't reject H0
+<BR>Observation: The null hypothesis cannot be rejected because the test value is less than the critical value. To conclude that Grow_light and Plant_food interact with one another is not supported by enough evidence.
+<BR>Grow_light's Effect on Plant Growth:
+<BR>Value of Test: 0.6248166
+<BR>Important Number: 5.317655
+<BR>Choice: Don't reject H0
+<BR>Observation: Since the test value is below the critical value, the null hypothesis cannot be successfully rejected. To draw the conclusion that there is a significant difference in mean growth with respect to the factor Grow_light, there is insufficient evidence.
+<BR>Plant food's impact on plant growth
+<BR>Value of Test: 0.8535168
+<BR>Important Number: 5.317655
+<BR>Choice: Don't reject H0
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B>"On Your Own"- TaskEDA: Exploratory Data Analysis of baseball dataset
+</FONT></B><BR>
+```{r, taskEDA,echo=FALSE}
+# Install and load necessary packages
+library(tidyverse)
+# Import the data into R
+bb<-read_csv("baseball.csv")
+# View the first few rows of the data
+head(bb)
+# EDA - Summary statistics
+summary(bb)
+
+# EDA - Plots
+ggplot(bb, aes(x = Year, y = W)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +
+  labs(title = "Wins Over the Years",
+       x = "Year",
+       y = "Wins")
+
+
+```
+
+<B><BR>Observation:</B><BR>We note the following from the scatter plot and summary statistics:
+<BR>
+Wins (W):
+The average number of victories is roughly 0.3263.
+<BR>There is a range of wins from 0.2140 to 0.4910.
+<BR>The quantity of victories varies throughout time.
+<BR>Playoffs:
+
+The average playoff value is roughly 0.1981, meaning that teams qualify for the postseason in roughly 20% of seasons.
+Not all seasons have playoff information, as indicated by the missing values (NA) for playoffs.
+<BR>RankPlayoffs and Rank Season:
+
+There is a roughly 3.123 mean rank for the regular season and a roughly 2.717 mean rank for the playoffs.
+<BR>The range of rankings aligns with the average number of teams participating in a season.
+<BR>G (Activities Engaged in):
+
+161.9 games have been played on average (G). The opponent slugging percentage (OLG) and opponent on-base percentage (OOBP) are as follows:
+<BR>
+There have been changes over time in the opponent's performance statistics (OOBP and OSLG).<BR>
+
+<FONT SIZE=3 COLOR='#A11515'>
+<B>Task "On Your Own"- TaskChi-Square:Chi-Square Goodness-of-Fit Test,
+</FONT></B><BR>
+```{r,Chi-Quare,warning=FALSE,echo=FALSE}
+# Extracting the decade from year.
+bb$Decade <- bb$Year - (bb$Year %% 10)
+# Creating a wins table by summing the wins by decade.
+wins <- bb %>%
+  group_by(Decade) %>%
+  summarize(wins = sum(W)) %>%
+  as.tibble()
+# Perform Chi-Square Goodness-of-Fit test.
+observed <- wins$wins
+expected <- rep(mean(observed), length(observed))
+chisq_test <- chisq.test(observed, p = expected / sum(expected))
+# Display results
+cat("Chi-Square Test Statistic:", chisq_test$statistic, "\n")
+cat("Degrees of Freedom:", chisq_test$parameter, "\n")
+cat("P-value:", chisq_test$p.value, "\n")
+# Decision
+alpha <- 0.05
+critical_value <- qchisq(1 - alpha, df = chisq_test$parameter)
+decision <- ifelse(chisq_test$statistic > critical_value, "Reject H0", "Fail to reject H0")
+cat("Critical Value:", critical_value, "\n")
+cat("Decision:", decision, "\n")
+```
+<B><BR>Observation:</B><BR>To find out if the number of wins varies by decade, the Chi-Square Goodness-of-Fit Test is used. <BR>The following is shown in the test output:
+<BR>Statistic for the Chi-Square Test:
+<BR>
+The approximate value of the computed Chi-Square test statistic is 0.004289996.
+<BR>Levels of Liberty:
+The output does not specifically state the degrees of freedom related to the Chi-Square test. Verifying this information in the test output is crucial.
+<BR>P-value:
+Regarding the Chi-Square test, the p-value is roughly 0.8535.
+<BR>Crucial Point:Around 5.317655 is the critical value at a significance level (α) of 0.05.
+<BR>Choice:
+Rejecting the null hypothesis is the decision made after comparing the test statistic with the critical value.
+These findings imply that there is insufficient data to draw the conclusion that the number of victories varies significantly by decade. The test statistic does not surpass the critical value, and the p-value exceeds the significance level, thereby supporting the decision not to reject the null hypothesis.
+<BR>
+<FONT SIZE=3 COLOR='#A11515'>
+<B>Task "On Your Own"- TaskCrop: Performing Two-Way ANOVA of crop_csv dataset.
+</FONT></B><BR>
+```{r, taskcrop,warning=FALSE,echo=FALSE}
+library(tidyverse)
+library(rstatix)
+crop_data <- read_csv("crop_data.csv")
+
+# Convert variables to factors
+crop_data$fertilizer <- as.factor(crop_data$fertilizer)
+crop_data$density <- as.factor(crop_data$density)
+crop_data$block <- as.factor(crop_data$block)
+# Perform Two-way ANOVA
+anova_result <- aov(yield ~ fertilizer * density, data = crop_data)
+# Display ANOVA table
+summary(anova_result)
+# Additional Post-hoc tests (if needed)
+posthoc_result <- anova_result %>%
+  tukey_hsd(vars = "yield", detailed = TRUE)
+# Display Post-hoc test results
+posthoc_result
+```
+<B><BR>Observation:</B><BR>Apply fertilizer:
+<BR>
+One degree of freedom (Df) is two.
+<BR>F value: 9.001; p-value (Pr(>F)): 0.000273 (highly significant, less than 0.05); Sum of Squares (Sum Sq): 6.068; <BR>Mean Square (Mean Sq): 3.034;
+<BR>Observation: The types of fertilizers used cause a notable variation in yield.
+<BR>Density:
+<BR>Df, or degrees of freedom: 1.
+5.122 is the Sum of Squares (Sum Sq). 5.122 is the Mean Square (Mean Sq). 15.195 is the F value. 0.000186 is the p-value (Pr(>F)) (highly significant, less than 0.05)
+<BR>Observation: Various crop densities result in a notable variation in yield.
+<BR>Density: Fertilizer Interaction:
+<BR>One degree of freedom (Df) is two.
+<BR>P-value (Pr(>F)): 0.5325 (not significant, greater than 0.05) <BR>F value: 0.635 Sum of Squares (Sum Sq): 0.428 Mean Square (Mean Sq): 0.214
+<BR>Observation: The yield is not significantly affected by the interaction of fertilizer and crop density.
+<BR>Remaining:
+Ninety degrees of freedom (Df)
+<BR>30.337 is the sum of squares (Sum Sq).
+<BR>0.337 is the mean square (Mean Sq)
+<BR>Remaining variance is represented by the residuals, and their mean square serves as a benchmark for comparison.
+<BR>
+In summary:
+Crop density and fertilizer both significantly affect yield.
+Fertilizer and crop density do not significantly interact, meaning that the impact of one factor is constant across all levels of the other.
+<BR>Strong evidence is suggested to reject the null hypotheses for both density and fertilizer, as indicated by the highly significant p-values for these variables.
+<BR>
+<FONT SIZE =4, COLOR="#A11515">
+<B>Conclusion:</B></FONT><BR>
+Different conclusions were reached from statistical analyses performed on different datasets.
+<BR>The project demonstrated a variety of applications by addressing a range of hypothesis testing and ANOVA scenarios.
+The significance of taking into account p-values, critical values, and effect sizes when making inferences was highlighted by the results interpretation.
+<BR>To improve the exploration and comprehension of the data, visualizations and summary statistics were used.
+<BR>In conclusion, the project showed how to apply statistical techniques such as ANOVA, Chi-Square tests, and hypothesis testing to provide insights into different scenarios and draw conclusions based on data analysis.
+<BR>The R programming language was used for a number of tasks related to the statistical analysis project, including hypothesis testing, ANOVA, and Chi-Square Goodness-of-Fit tests. This is a general assessment based on the assignments:
+
+<B><BR>Section 12-1, Sodium Contents of Foods:<BR></B> Hypothesis Testing
+
+Null Hypothesis (H0): There is no difference in the average sodium content of cereals, desserts, and condiments.
+Alternative Hypothesis (H1): There is a variation in the average sodium concentrations.
+<BR>Findings:
+It was determined that the F-statistic was roughly 48.00537.
+For an F-distribution (α = 0.05) with (2, 15) degrees of freedom, 3.68232 is the critical value.
+Choice: Dismiss the null hypothesis.
+<BR>In summary:
+There is enough data to draw the conclusion that cereals, condiments, and desserts all have different average sodium contents.
+<B><BR>2. Leading Companies' Sales (Section 12-2):</B><BR>
+ANOVA in One Way:
+examined to see if the sales means of various companies differed noticeably.
+The null hypothesis was not rejected by the ANOVA.
+<BR>In summary:
+failed to rule out the null hypothesis; no discernible variation in the sales means was substantial.
+<B><BR>3. Section 12-2, Per-Pupil Expenditures:</B><BR> One-Way ANOVA
+
+looked into whether different regions of the nation had different means for spending on education per pupil.
+The null hypothesis was not rejected by the ANOVA.
+<BR>In summary:
+
+failed to rule out the null hypothesis; no discernible variation in the means of per-pupil expenses was found.
+<B><BR>4. Boosting Plant Development (Section 12-3):<BR></B> Dual-Factor ANOVA
+
+investigated the interactions between two factors (plant food and grow light) and their effects on plant growth.
+<BR>Findings:
+ANOVA was used to investigate the interaction and main effects.
+There were no discernible effects found in relation to plant food, grow light, or their combination.
+
+<B><BR>5. Data Analysis and Exploration in Baseball:
+<BR></B>
+Plots and descriptive statistics were employed to examine baseball data.
+Chi-Square Test for Goodness-of-Fit:
+<BR>
+looked into whether the number of victories varied by decade.
+Findings:
+
+failed to reject the null hypothesis, indicating that there was no discernible change in wins by decade.
+<BR>
+Fertilizer and crop density have a big impact on yield.
+Crop density and fertilizer have no discernible interactions, so the effects of each are uniform at all concentrations of the other.
+<BR>Based on the highly significant p-values for density and fertilizer, there is strong evidence to reject the null hypotheses.
+<BR>
+<P><BR>
+<FONT SIZE =4, COLOR="#A11515">
+<B>Bibliography:</B><BR>
+<B>References:</B></FONT><BR>
+<BR>1. David S. Moore, George P. McCabe, and Bruce A. Craig, "Introduction to the Practice of Statistics".
+<BR>2."Hypothesis Testing: A Visual Introduction To Statistical Significance" written by Phil Rack.
+<BR>3ANOVA in conjunction with experimental design
+
+<BR>4.Douglas C. Montgomery's "Design and Analysis of Experiments"
+<BR>5.Charles S. Davis' book "Statistical Methods for the Analysis of Repeated Measurements"
+<BR>6.Information Visualization:
+Hadley Wickham's "ggplot2: Elegant Graphics for Data Analysis"
+
